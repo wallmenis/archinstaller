@@ -15,18 +15,23 @@ RET=0
 while [ ! $RET -eq 1 ]; do
     echo "Please enter additional packages you would like to include after the installation. [package name/n] "
     read PACKAGES_EXTRA
-    if [ ${#PACKAGES_EXTRA[@]} -lt 2 ]; then
-        if [ $PACKAGES_EXTRA != "n" ] || [ $PACKAGES_EXTRA="" ]; then
-            RET=0
-            for PACKAGE_EXTRA in ${PACKAGES_EXTRA[@]}
-            do
-                INP=$(pacman -Ss $PACKAGE_EXTRA | grep -w $PACKAGE_EXTRA | wc -l)
-                if [ $INP -gt $RET ]; then
-                    RET=$INP
+    if [ ${#PACKAGES_EXTRA[@]} -eq 1 ]; then
+        if [ ! -z $PACKAGES_EXTRA ];then
+            if [ $PACKAGES_EXTRA != "n" ]; then
+                RET=0
+                for PACKAGE_EXTRA in ${PACKAGES_EXTRA[@]}
+                do
+                    INP=$(pacman -Ss $PACKAGE_EXTRA | grep -w $PACKAGE_EXTRA | wc -l)
+                    if [ $INP -gt $RET ]; then
+                        RET=$INP
+                    fi
+                done
+                if [ ! $RET -eq 1 ]; then
+                    echo "One or more packages not found"
                 fi
-            done
-            if [ ! $RET -eq 1 ]; then
-                echo "One or more packages not found"
+            else
+                RET=1
+                echo "No extra packages sellected."
             fi
         else
             RET=1
@@ -71,6 +76,6 @@ while [ $INP != "y" ]; do
     read INP
 done
 echo "Now installing system to drive."
-#mount $ROOTDRV /mnt
+mount $ROOTDRV /mnt
 
-#pacstrap -K /mnt base base-devel linux linux-firmware nano networkmanager $PACKAGES_EXTRA
+pacstrap -K /mnt base base-devel linux linux-firmware nano networkmanager $PACKAGES_EXTRA
