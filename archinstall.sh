@@ -78,4 +78,12 @@ done
 echo "Now installing system to drive."
 mount $ROOTDRV /mnt
 
-pacstrap -K /mnt base base-devel linux linux-firmware nano networkmanager $PACKAGES_EXTRA
+pacstrap -K /mnt base base-devel linux linux-firmware nano grub networkmanager $PACKAGES_EXTRA
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+echo "Please enter a password for root user."
+passwd
+
